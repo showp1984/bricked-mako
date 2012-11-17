@@ -265,12 +265,37 @@ static struct acpu_level acpu_freq_tbl_fast[] __initdata = {
 	{ 0, { 0 } }
 };
 
+static struct acpu_level tbl_faster[] __initdata = {
+	{ 1, {   384000, PLL_8, 0, 2, 0x00 }, L2(0),   850000 },
+	{ 0, {   432000, HFPLL, 2, 0, 0x20 }, L2(6),   875000 },
+	{ 1, {   486000, HFPLL, 2, 0, 0x24 }, L2(6),   875000 },
+	{ 0, {   540000, HFPLL, 2, 0, 0x28 }, L2(6),   900000 },
+	{ 1, {   594000, HFPLL, 1, 0, 0x16 }, L2(6),   900000 },
+	{ 0, {   648000, HFPLL, 1, 0, 0x18 }, L2(6),   925000 },
+	{ 1, {   702000, HFPLL, 1, 0, 0x1A }, L2(6),   925000 },
+	{ 0, {   756000, HFPLL, 1, 0, 0x1C }, L2(6),   962500 },
+	{ 1, {   810000, HFPLL, 1, 0, 0x1E }, L2(6),   962500 },
+	{ 0, {   864000, HFPLL, 1, 0, 0x20 }, L2(6),   975000 },
+	{ 1, {   918000, HFPLL, 1, 0, 0x22 }, L2(6),   975000 },
+	{ 0, {   972000, HFPLL, 1, 0, 0x24 }, L2(6),  1000000 },
+	{ 1, {  1026000, HFPLL, 1, 0, 0x26 }, L2(6),  1000000 },
+	{ 0, {  1080000, HFPLL, 1, 0, 0x28 }, L2(15), 1050000 },
+	{ 1, {  1134000, HFPLL, 1, 0, 0x2A }, L2(15), 1050000 },
+	{ 0, {  1188000, HFPLL, 1, 0, 0x2C }, L2(15), 1075000 },
+	{ 1, {  1242000, HFPLL, 1, 0, 0x2E }, L2(15), 1075000 },
+	{ 0, {  1296000, HFPLL, 1, 0, 0x30 }, L2(15), 1100000 },
+	{ 1, {  1350000, HFPLL, 1, 0, 0x32 }, L2(15), 1100000 },
+	{ 0, {  1404000, HFPLL, 1, 0, 0x34 }, L2(15), 1112500 },
+	{ 1, {  1458000, HFPLL, 1, 0, 0x36 }, L2(15), 1112500 },
+	{ 1, {  1512000, HFPLL, 1, 0, 0x38 }, L2(15), 1125000 },
+	{ 0, { 0 } }
+};
+
 static struct pvs_table pvs_tables[NUM_PVS] __initdata = {
 [PVS_SLOW]    = { acpu_freq_tbl_slow, sizeof(acpu_freq_tbl_slow),     0 },
 [PVS_NOMINAL] = { acpu_freq_tbl_nom,  sizeof(acpu_freq_tbl_nom),  25000 },
 [PVS_FAST]    = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 25000 },
-/* TODO: update the faster table when data is available */
-[PVS_FASTER]  = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 25000 },
+[PVS_FASTER]  = { acpu_freq_tbl_faster, sizeof(acpu_freq_tbl_faster), 25000 },
 };
 
 static struct acpuclk_krait_params acpuclk_8064_params __initdata = {
