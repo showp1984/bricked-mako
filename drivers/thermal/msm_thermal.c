@@ -28,14 +28,14 @@
 
 //mid thermal limit
 #define DEF_ALLOWED_MID_HIGH 72
-#define DEF_ALLOWED_MID_FREQ 648000
+#define DEF_ALLOWED_MID_FREQ 1026000
 
 //low thermal limit
 #define DEF_ALLOWED_LOW_HIGH 70
-#define DEF_ALLOWED_LOW_FREQ 972000
+#define DEF_ALLOWED_LOW_FREQ 1350000
 
 //Sampling interval
-#define DEF_THERMAL_CHECK_MS 1000
+#define DEF_THERMAL_CHECK_MS 250
 
 static int enabled;
 
@@ -147,8 +147,8 @@ static void check_temp(struct work_struct *work)
 					pr_warn("msm_thermal: ERROR! pre_throttled_max=0, falling back to %u\n", max_freq);
 				}
 				update_policy = 1;
-				/* wait until 2nd core is unthrottled */
-				if (cpu == 1)
+				/* wait until 4th core is unthrottled */
+				if (cpu == 3)
 					thermal_throttled = 0;
 				pr_warn("msm_thermal: Low Thermal Throttling Ended! temp: %lu\n", temp);
 			}
@@ -166,8 +166,8 @@ static void check_temp(struct work_struct *work)
 			if (cpu_policy->max < cpu_policy->cpuinfo.max_freq) {
 				max_freq = msm_thermal_tuners_ins.allowed_low_freq;
 				update_policy = 1;
-				/* wait until 2nd core is unthrottled */
-				if (cpu == 1)
+				/* wait until 4th core is unthrottled */
+				if (cpu == 3)
 					thermal_throttled = 1;
 				pr_warn("msm_thermal: Mid Thermal Throttling Ended! temp: %lu\n", temp);
 			}
@@ -184,8 +184,8 @@ static void check_temp(struct work_struct *work)
 			if (cpu_policy->max < cpu_policy->cpuinfo.max_freq) {
 				max_freq = msm_thermal_tuners_ins.allowed_mid_freq;
 				update_policy = 1;
-				/* wait until 2nd core is unthrottled */
-				if (cpu == 1)
+				/* wait until 4th core is unthrottled */
+				if (cpu == 3)
 					thermal_throttled = 2;
 				pr_warn("msm_thermal: Max Thermal Throttling Ended! temp: %lu\n", temp);
 			}
