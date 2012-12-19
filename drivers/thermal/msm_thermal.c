@@ -19,8 +19,12 @@
 #include <linux/msm_tsens.h>
 #include <linux/workqueue.h>
 #include <linux/cpu.h>
+#include <linux/reboot.h>
 
 #define DEF_TEMP_SENSOR      0
+
+//shutdown temp
+#define DEF_SHUTDOWNTEMP 80
 
 //max thermal limit
 #define DEF_ALLOWED_MAX_HIGH 76
@@ -37,6 +41,8 @@
 //Sampling interval
 #define DEF_THERMAL_CHECK_MS 250
 
+static DEFINE_MUTEX(emergency_shutdown_mutex);
+
 static int enabled;
 
 //Throttling indicator, 0=not throttled, 1=low, 2=mid, 3=max
@@ -49,6 +55,8 @@ static struct delayed_work check_temp_work;
 static struct workqueue_struct *check_temp_workq;
 
 static struct msm_thermal_tuners {
+	unsigned int shutdown_temp;
+
 	unsigned int allowed_max_high;
 	unsigned int allowed_max_low;
 	unsigned int allowed_max_freq;
@@ -63,6 +71,8 @@ static struct msm_thermal_tuners {
 
 	unsigned int check_interval_ms;
 } msm_thermal_tuners_ins = {
+	.shutdown_temp = DEF_SHUTDOWNTEMP,
+
 	.allowed_max_high = DEF_ALLOWED_MAX_HIGH,
 	.allowed_max_low = (DEF_ALLOWED_MAX_HIGH - 5),
 	.allowed_max_freq = DEF_ALLOWED_MAX_FREQ,
@@ -115,6 +125,20 @@ static void check_temp(struct work_struct *work)
 				tsens_dev.sensor_num);
 		goto reschedule;
 	}
+
+        if (temp >= (msm_thermal_tuners_ins.shutdown_temp)) {
+                mutex_lock(&emergency_shutdown_mutex);
+                pr_warn("################################\n");
+                pr_warn("################################\n");
+                pr_warn("- %u OVERTEMP! SHUTTING DOWN! -\n", msm_thermal_tuners_ins.shutdown_temp);
+                pr_warn("################################\n");
+                pr_warn("################################\n");
+                /* orderly poweroff tries to power down gracefully
+                   if it fails it will force it. */
+                orderly_poweroff(true);
+                cancel_delayed_work_sync(&check_temp_work);
+                mutex_unlock(&emergency_shutdown_mutex);
+        }
 
 	for_each_possible_cpu(cpu) {
 		update_policy = 0;
@@ -257,6 +281,7 @@ static ssize_t show_##file_name						\
 	return sprintf(buf, "%u\n", msm_thermal_tuners_ins.object);				\
 }
 
+show_one(shutdown_temp, shutdown_temp);
 show_one(allowed_max_high, allowed_max_high);
 show_one(allowed_max_low, allowed_max_low);
 show_one(allowed_max_freq, allowed_max_freq);
@@ -267,6 +292,20 @@ show_one(allowed_low_high, allowed_low_high);
 show_one(allowed_low_low, allowed_low_low);
 show_one(allowed_low_freq, allowed_low_freq);
 show_one(check_interval_ms, check_interval_ms);
+
+static ssize_t store_shutdown_temp(struct kobject *a, struct attribute *b,
+				   const char *buf, size_t count)
+{
+	unsigned int input;
+	int ret;
+	ret = sscanf(buf, "%u", &input);
+	if (ret != 1)
+		return -EINVAL;
+
+	msm_thermal_tuners_ins.shutdown_temp = input;
+
+	return count;
+}
 
 static ssize_t store_allowed_max_high(struct kobject *a, struct attribute *b,
 				   const char *buf, size_t count)
@@ -408,7 +447,7 @@ static ssize_t store_check_interval_ms(struct kobject *a, struct attribute *b,
 	return count;
 }
 
-
+define_one_global_rw(shutdown_temp);
 define_one_global_rw(allowed_max_high);
 define_one_global_rw(allowed_max_low);
 define_one_global_rw(allowed_max_freq);
@@ -421,6 +460,7 @@ define_one_global_rw(allowed_low_freq);
 define_one_global_rw(check_interval_ms);
 
 static struct attribute *msm_thermal_attributes[] = {
+        &shutdown_temp.attr,
 	&allowed_max_high.attr,
 	&allowed_max_low.attr,
 	&allowed_max_freq.attr,
