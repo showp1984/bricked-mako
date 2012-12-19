@@ -782,7 +782,7 @@ static int cpu_has_active_perf(void)
 	return 0;
 }
 
-static struct notifier_block __cpuinitdata pmu_cpu_notifier = {
+static struct notifier_block pmu_cpu_notifier = {
 	.notifier_call = pmu_cpu_notify,
 };
 
