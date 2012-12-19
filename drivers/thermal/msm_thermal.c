@@ -46,6 +46,7 @@ static int thermal_throttled = 0;
 static int pre_throttled_max = 0;
 
 static struct delayed_work check_temp_work;
+static struct workqueue_struct *check_temp_workq;
 
 static struct msm_thermal_tuners {
 	unsigned int allowed_max_high;
@@ -198,7 +199,7 @@ static void check_temp(struct work_struct *work)
 
 reschedule:
 	if (enabled)
-		schedule_delayed_work(&check_temp_work,
+		queue_delayed_work(check_temp_workq, &check_temp_work,
 				msecs_to_jiffies(msm_thermal_tuners_ins.check_interval_ms));
 }
 
@@ -208,7 +209,7 @@ static void disable_msm_thermal(void)
 	struct cpufreq_policy *cpu_policy = NULL;
 
 	/* make sure check_temp is no longer running */
-	cancel_delayed_work(&check_temp_work);
+	cancel_delayed_work_sync(&check_temp_work);
 	flush_scheduled_work();
 
 	if (limited_max_freq == MSM_CPUFREQ_NO_LIMIT)
@@ -448,8 +449,12 @@ static int __init msm_thermal_init(void)
 	int rc, ret = 0;
 
 	enabled = 1;
-	INIT_DELAYED_WORK(&check_temp_work, check_temp);
-	schedule_delayed_work(&check_temp_work, 0);
+        check_temp_workq = alloc_workqueue(
+                "msm_thermal", WQ_UNBOUND | WQ_RESCUER, 1);
+        if (!check_temp_workq)
+                BUG_ON(ENOMEM);
+        INIT_DELAYED_WORK(&check_temp_work, check_temp);
+        queue_delayed_work(check_temp_workq, &check_temp_work, 0);
 
 	msm_thermal_kobject = kobject_create_and_add("msm_thermal", kernel_kobj);
 	if (msm_thermal_kobject) {
