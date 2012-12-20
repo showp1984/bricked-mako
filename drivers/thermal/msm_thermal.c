@@ -27,15 +27,15 @@
 #define DEF_SHUTDOWNTEMP 80
 
 //max thermal limit
-#define DEF_ALLOWED_MAX_HIGH 76
+#define DEF_ALLOWED_MAX_HIGH 66
 #define DEF_ALLOWED_MAX_FREQ 384000
 
 //mid thermal limit
-#define DEF_ALLOWED_MID_HIGH 72
+#define DEF_ALLOWED_MID_HIGH 62
 #define DEF_ALLOWED_MID_FREQ 1026000
 
 //low thermal limit
-#define DEF_ALLOWED_LOW_HIGH 70
+#define DEF_ALLOWED_LOW_HIGH 60
 #define DEF_ALLOWED_LOW_FREQ 1350000
 
 //Sampling interval
