@@ -68,7 +68,7 @@ static struct drv_data {
 } drv;
 
 #ifdef CONFIG_DEBUG_FS
-static unsigned int krait_chip_variant = 0;
+static unsigned int krait_chip_variant = 0, krait_used_table = 0;
 #endif
 
 static unsigned long acpuclk_krait_get_rate(int cpu)
@@ -1022,6 +1022,9 @@ static int __init select_freq_plan(u32 qfprom_phys)
 			tbl_idx = PVS_UNKNOWN;
 			break;
 		}
+#ifdef CONFIG_DEBUG_FS
+                krait_chip_variant = tbl_idx;
+#endif
 	} else {
 		tbl_idx = PVS_UNKNOWN;
 		dev_err(drv.dev, "Unable to map QFPROM base\n");
@@ -1033,6 +1036,9 @@ static int __init select_freq_plan(u32 qfprom_phys)
 	} else {
 		dev_info(drv.dev, "ACPU PVS: %s\n", pvs_names[tbl_idx]);
 	}
+#ifdef CONFIG_DEBUG_FS
+        krait_used_table = tbl_idx;
+#endif
 
 	return tbl_idx;
 }
@@ -1069,10 +1075,6 @@ static void __init drv_data_init(struct device *dev,
 				    GFP_KERNEL);
 	BUG_ON(!drv.acpu_freq_tbl);
 	drv.boost_uv = params->pvs_tables[tbl_idx].boost_uv;
-
-#ifdef CONFIG_DEBUG_FS
-        krait_chip_variant = tbl_idx;
-#endif
 
 	acpuclk_krait_data.power_collapse_khz = params->stby_khz;
 	acpuclk_krait_data.wait_for_irq_khz = params->stby_khz;
@@ -1121,10 +1123,16 @@ static void __init hw_init(void)
 #ifdef CONFIG_DEBUG_FS
 static int krait_variant_debugfs_show(struct seq_file *s, void *data)
 {
+        seq_printf(s, "Your cpu uses this cpufreq table: %s\n",
+                   ((krait_used_table == PVS_SLOW) ? "SLOW" :
+                   ((krait_used_table == PVS_NOMINAL) ? "NOMINAL" :
+                   ((krait_used_table == PVS_FAST) ? "FAST" :
+                   ((krait_used_table == PVS_FASTER) ? "FASTER" : "ERROR, NOT FOUND")))));
         if (krait_chip_variant == PVS_UNKNOWN) {
                 seq_printf(s, "Your krait chip variant is UNKNOWN!\n");
         } else {
                 seq_printf(s, "Your krait chip variant is: \n");
+                seq_printf(s, "[%s] UNKNOWN \n", ((krait_chip_variant == PVS_UNKNOWN) ? "X" : " "));
                 seq_printf(s, "[%s] SLOW \n", ((krait_chip_variant == PVS_SLOW) ? "X" : " "));
                 seq_printf(s, "[%s] NOMINAL \n", ((krait_chip_variant == PVS_NOMINAL) ? "X" : " "));
                 seq_printf(s, "[%s] FAST \n", ((krait_chip_variant == PVS_FAST) ? "X" : " "));
