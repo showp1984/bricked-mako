@@ -25,7 +25,7 @@
 #define DEF_TEMP_SENSOR1      1
 
 //shutdown temp
-#define DEF_SHUTDOWNTEMP 80
+#define DEF_SHUTDOWNTEMP 81
 
 //max thermal limit
 #define DEF_ALLOWED_MAX_HIGH 76
@@ -40,7 +40,7 @@
 #define DEF_ALLOWED_LOW_FREQ 1350000
 
 //Sampling interval
-#define DEF_THERMAL_CHECK_MS 250
+#define DEF_THERMAL_CHECK_MS 100
 
 static DEFINE_MUTEX(emergency_shutdown_mutex);
 
