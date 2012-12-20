@@ -270,11 +270,7 @@ static struct pvs_table pvs_tables[NUM_PVS] __initdata = {
 [PVS_NOMINAL] = { acpu_freq_tbl_nom,  sizeof(acpu_freq_tbl_nom),  25000 },
 [PVS_FAST]    = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 25000 },
 /* TODO: update the faster table when data is available */
-#ifdef CONFIG_CPU_OVERCLOCK
-[PVS_FASTER]  = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 35000 },
-#else
 [PVS_FASTER]  = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 25000 },
-#endif
 };
 
 static struct acpuclk_krait_params acpuclk_8064_params __initdata = {
