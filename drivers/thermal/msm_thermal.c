@@ -48,7 +48,7 @@ static int enabled;
 //Throttling indicator, 0=not throttled, 1=low, 2=mid, 3=max
 static int thermal_throttled = 0;
 
-//Safe the cpu max freq before throttling
+//Save the cpu max freq before throttling
 static int pre_throttled_max = 0;
 
 static struct delayed_work check_temp_work;
@@ -114,7 +114,7 @@ static void check_temp(struct work_struct *work)
 	struct tsens_device tsens_dev;
 	unsigned long temp = 0;
 	unsigned int max_freq = 0;
-	int update_policy = 0;
+	bool update_policy = false;
 	int cpu = 0;
 	int ret = 0;
 
@@ -136,12 +136,18 @@ static void check_temp(struct work_struct *work)
                 /* orderly poweroff tries to power down gracefully
                    if it fails it will force it. */
                 orderly_poweroff(true);
-                cancel_delayed_work_sync(&check_temp_work);
+                for_each_possible_cpu(cpu) {
+                        update_policy = true;
+                        max_freq = msm_thermal_tuners_ins.allowed_max_freq;
+                        thermal_throttled = 3;
+                        pr_warn("msm_thermal: Emergency throttled CPU%i to %u! temp:%lu\n",
+                                cpu, sm_thermal_tuners_ins.allowed_max_freq temp);
+                }
                 mutex_unlock(&emergency_shutdown_mutex);
         }
 
 	for_each_possible_cpu(cpu) {
-		update_policy = 0;
+		update_policy = false;
 		cpu_policy = cpufreq_cpu_get(cpu);
 		if (!cpu_policy) {
 			pr_debug("msm_thermal: NULL policy on cpu %d\n", cpu);
@@ -156,7 +162,7 @@ static void check_temp(struct work_struct *work)
 		if ((temp >= msm_thermal_tuners_ins.allowed_low_high) &&
 		    (temp < msm_thermal_tuners_ins.allowed_mid_high) &&
 		    (cpu_policy->max > msm_thermal_tuners_ins.allowed_low_freq)) {
-			update_policy = 1;
+			update_policy = true;
 			max_freq = msm_thermal_tuners_ins.allowed_low_freq;
 			thermal_throttled = 1;
 			pr_warn("msm_thermal: Thermal Throttled (low)! temp: %lu\n", temp);
@@ -170,7 +176,7 @@ static void check_temp(struct work_struct *work)
 					max_freq = CONFIG_MSM_CPU_FREQ_MAX;
 					pr_warn("msm_thermal: ERROR! pre_throttled_max=0, falling back to %u\n", max_freq);
 				}
-				update_policy = 1;
+				update_policy = true;
 				/* wait until 4th core is unthrottled */
 				if (cpu == 3)
 					thermal_throttled = 0;
@@ -180,7 +186,7 @@ static void check_temp(struct work_struct *work)
 		} else if ((temp >= msm_thermal_tuners_ins.allowed_low_high) &&
 			   (temp < msm_thermal_tuners_ins.allowed_mid_low) &&
 			   (cpu_policy->max > msm_thermal_tuners_ins.allowed_mid_freq)) {
-			update_policy = 1;
+			update_policy = true;
 			max_freq = msm_thermal_tuners_ins.allowed_low_freq;
 			thermal_throttled = 2;
 			pr_warn("msm_thermal: Thermal Throttled (mid)! temp: %lu\n", temp);
@@ -189,7 +195,7 @@ static void check_temp(struct work_struct *work)
 			   (thermal_throttled > 1)) {
 			if (cpu_policy->max < cpu_policy->cpuinfo.max_freq) {
 				max_freq = msm_thermal_tuners_ins.allowed_low_freq;
-				update_policy = 1;
+				update_policy = true;
 				/* wait until 4th core is unthrottled */
 				if (cpu == 3)
 					thermal_throttled = 1;
@@ -198,7 +204,7 @@ static void check_temp(struct work_struct *work)
 		//max trip point
 		} else if ((temp >= msm_thermal_tuners_ins.allowed_max_high) &&
 			   (cpu_policy->max > msm_thermal_tuners_ins.allowed_max_freq)) {
-			update_policy = 1;
+			update_policy = true;
 			max_freq = msm_thermal_tuners_ins.allowed_max_freq;
 			thermal_throttled = 3;
 			pr_warn("msm_thermal: Thermal Throttled (max)! temp: %lu\n", temp);
@@ -207,7 +213,7 @@ static void check_temp(struct work_struct *work)
 			   (thermal_throttled > 2)) {
 			if (cpu_policy->max < cpu_policy->cpuinfo.max_freq) {
 				max_freq = msm_thermal_tuners_ins.allowed_mid_freq;
-				update_policy = 1;
+				update_policy = true;
 				/* wait until 4th core is unthrottled */
 				if (cpu == 3)
 					thermal_throttled = 2;
@@ -225,6 +231,7 @@ reschedule:
 	if (enabled)
 		queue_delayed_work(check_temp_workq, &check_temp_work,
 				msecs_to_jiffies(msm_thermal_tuners_ins.check_interval_ms));
+        return;
 }
 
 static void disable_msm_thermal(void)
