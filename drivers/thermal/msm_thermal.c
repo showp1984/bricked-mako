@@ -193,7 +193,7 @@ static void check_temp(struct work_struct *work)
                                         (max(temp0, temp1)), (temp0>temp1) ? "0" : "1");
                         }
 		//mid trip point
-		} else if (((max(temp0, temp1)) >= msm_thermal_tuners_ins.allowed_low_high) &&
+		} else if (((max(temp0, temp1)) >= msm_thermal_tuners_ins.allowed_mid_high) &&
 			   ((max(temp0, temp1)) < msm_thermal_tuners_ins.allowed_max_high) &&
 			   (thermal_throttled < 2)) {
 			update_policy = true;
