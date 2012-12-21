@@ -103,7 +103,7 @@ static int update_cpu_max_freq(struct cpufreq_policy *cpu_policy,
 
 	ret = cpufreq_update_policy(cpu);
 	if (!ret)
-		pr_info("msm_thermal: Limiting core%d max frequency to %d\n",
+		pr_debug("msm_thermal: Setting CPU%d max frequency to %d\n",
 			cpu, max_freq);
 	return ret;
 }
@@ -189,7 +189,7 @@ static void check_temp(struct work_struct *work)
                         }
                         if (cpu == (CONFIG_NR_CPUS-1)) {
                                 thermal_throttled = 0;
-                                pr_warn("msm_thermal: CPU%i: Low thermal throttle ended! temp:%lu by:%s\n", cpu,
+                                pr_warn("msm_thermal: Low thermal throttle ended! temp:%lu by:%s\n",
                                         (max(temp0, temp1)), (temp0>temp1) ? "0" : "1");
                         }
 		//mid trip point
@@ -210,7 +210,7 @@ static void check_temp(struct work_struct *work)
 			update_policy = true;
                         if (cpu == (CONFIG_NR_CPUS-1)) {
                                 thermal_throttled = 1;
-                                pr_warn("msm_thermal: CPU%i: Mid thermal throttle ended! temp:%lu by:%s\n", cpu,
+                                pr_warn("msm_thermal: Mid thermal throttle ended! temp:%lu by:%s\n",
                                         (max(temp0, temp1)), (temp0>temp1) ? "0" : "1");
                         }
 		//max trip point
@@ -229,7 +229,7 @@ static void check_temp(struct work_struct *work)
 			update_policy = true;
                         if (cpu == (CONFIG_NR_CPUS-1)) {
                                 thermal_throttled = 2;
-                                pr_warn("msm_thermal: CPU%i: Max thermal throttle ended! temp:%lu by:%s\n", cpu,
+                                pr_warn("msm_thermal: Max thermal throttle ended! temp:%lu by:%s\n",
                                         (max(temp0, temp1)), (temp0>temp1) ? "0" : "1");
                         }
 		}
