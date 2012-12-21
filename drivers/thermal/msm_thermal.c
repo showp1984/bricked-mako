@@ -25,10 +25,10 @@
 #define DEF_TEMP_SENSOR1      1
 
 //shutdown temp
-#define DEF_SHUTDOWNTEMP 81
+#define DEF_SHUTDOWNTEMP 80
 
 //max thermal limit
-#define DEF_ALLOWED_MAX_HIGH 76
+#define DEF_ALLOWED_MAX_HIGH 75
 #define DEF_ALLOWED_MAX_FREQ 384000
 
 //mid thermal limit
@@ -75,7 +75,7 @@ static struct msm_thermal_tuners {
 	.shutdown_temp = DEF_SHUTDOWNTEMP,
 
 	.allowed_max_high = DEF_ALLOWED_MAX_HIGH,
-	.allowed_max_low = (DEF_ALLOWED_MAX_HIGH - 5),
+	.allowed_max_low = (DEF_ALLOWED_MAX_HIGH - 4),
 	.allowed_max_freq = DEF_ALLOWED_MAX_FREQ,
 
 	.allowed_mid_high = DEF_ALLOWED_MID_HIGH,
