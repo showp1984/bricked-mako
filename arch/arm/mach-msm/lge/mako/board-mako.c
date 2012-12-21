@@ -2121,7 +2121,7 @@ static void __init apq8064_mako_init(void)
 	apq8064_init_input();
 	apq8064_init_misc();
 #ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
-        set_two_phase_freq(1026000);
+        set_two_phase_freq(1242000);
 #endif
 }
 
