@@ -105,7 +105,6 @@ static int update_cpu_max_freq(struct cpufreq_policy *cpu_policy,
 	if (!ret)
 		pr_info("msm_thermal: Limiting core%d max frequency to %d\n",
 			cpu, max_freq);
-
 	return ret;
 }
 
@@ -117,7 +116,7 @@ static void check_temp(struct work_struct *work)
 	unsigned long temp0 = 0, temp1 = 0;
 	unsigned int max_freq = 0;
 	bool update_policy = false;
-	int cpu = 0;
+	int i = 0, cpu = 0;
 	int ret0 = 0, ret1 = 0;
 
 	tsens_dev0.sensor_num = DEF_TEMP_SENSOR0;
@@ -183,6 +182,11 @@ static void check_temp(struct work_struct *work)
 				pr_warn("msm_thermal: ERROR! pre_throttled_max=0, falling back to %u\n", max_freq);
 			}
 			update_policy = true;
+                        for (i = 1; i < CONFIG_NR_CPUS; i++) {
+                                if (cpu_online(i))
+                                        continue;
+                                cpu_up(i);
+                        }
                         if (cpu == (CONFIG_NR_CPUS-1)) {
                                 thermal_throttled = 0;
                                 pr_warn("msm_thermal: CPU%i: Low thermal throttle ended! temp:%lu by:%s\n", cpu,
