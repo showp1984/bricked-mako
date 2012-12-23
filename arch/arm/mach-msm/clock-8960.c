@@ -529,7 +529,7 @@ static struct pll_vote_clk pll8_clk = {
 	.parent = &pxo_clk.c,
 	.c = {
 		.dbg_name = "pll8_clk",
-		.rate = 384000000,
+		.rate = 192000000,
 		.ops = &clk_ops_pll_vote,
 		CLK_INIT(pll8_clk.c),
 		.warned = true,
