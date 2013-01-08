@@ -19,31 +19,12 @@
 #include <linux/msm_tsens.h>
 #include <linux/workqueue.h>
 #include <linux/cpu.h>
-#include <linux/reboot.h>
-#include <linux/earlysuspend.h>
-
-#define DEF_TEMP_SENSOR0      0
-#define DEF_TEMP_SENSOR1      1
-
-//shutdown temp
-#define DEF_SHUTDOWNTEMP 80
-
-//max thermal limit
-#define DEF_ALLOWED_MAX_HIGH 65
-#define DEF_ALLOWED_MAX_FREQ 384000
-
-//mid thermal limit
-#define DEF_ALLOWED_MID_HIGH 62
-#define DEF_ALLOWED_MID_FREQ 810000
-
-//low thermal limit
-#define DEF_ALLOWED_LOW_HIGH 60
-#define DEF_ALLOWED_LOW_FREQ 1350000
-
-//Sampling interval
-#define DEF_THERMAL_CHECK_MS 100
-
-static DEFINE_MUTEX(emergency_shutdown_mutex);
+#include <linux/cpufreq.h>
+#include <linux/msm_tsens.h>
+#include <linux/msm_thermal.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+#include <mach/cpufreq.h>
 
 static int enabled;
 
