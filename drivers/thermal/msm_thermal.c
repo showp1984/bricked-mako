@@ -503,6 +503,50 @@ static int __devinit msm_thermal_dev_probe(struct platform_device *pdev)
 	if (ret)
 		goto fail;
 
+	key = "qcom,shutdown_temp";
+	ret = of_property_read_u32(node, key, &data.shutdown_temp);
+	if (ret)
+		goto fail;
+
+	key = "qcom,allowed_max_high";
+	ret = of_property_read_u32(node, key, &data.allowed_max_high);
+	if (ret)
+		goto fail;
+	key = "qcom,allowed_max_low";
+	ret = of_property_read_u32(node, key, &data.allowed_max_low);
+	if (ret)
+		goto fail;
+	key = "qcom,allowed_max_freq";
+	ret = of_property_read_u32(node, key, &data.allowed_max_freq);
+	if (ret)
+		goto fail;
+
+	key = "qcom,allowed_mid_high";
+	ret = of_property_read_u32(node, key, &data.allowed_mid_high);
+	if (ret)
+		goto fail;
+	key = "qcom,allowed_mid_low";
+	ret = of_property_read_u32(node, key, &data.allowed_mid_low);
+	if (ret)
+		goto fail;
+	key = "qcom,allowed_mid_freq";
+	ret = of_property_read_u32(node, key, &data.allowed_mid_freq);
+	if (ret)
+		goto fail;
+
+	key = "qcom,allowed_low_high";
+	ret = of_property_read_u32(node, key, &data.allowed_low_high);
+	if (ret)
+		goto fail;
+	key = "qcom,allowed_low_low";
+	ret = of_property_read_u32(node, key, &data.allowed_low_low);
+	if (ret)
+		goto fail;
+	key = "qcom,allowed_low_freq";
+	ret = of_property_read_u32(node, key, &data.allowed_low_freq);
+	if (ret)
+		goto fail;
+
 fail:
 	if (ret)
 		pr_err("%s: Failed reading node=%s, key=%s\n",
