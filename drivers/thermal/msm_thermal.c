@@ -447,13 +447,14 @@ static struct attribute *msm_thermal_attributes[] = {
 
 static struct attribute_group msm_thermal_attr_group = {
 	.attrs = msm_thermal_attributes,
-	.name = "conf",
+	.name = "sensor_conf",
 };
 /**************************** SYSFS END ****************************/
 
 int __devinit msm_thermal_init(struct msm_thermal_data *pdata)
 {
 	int ret = 0, rc = 0;
+        char name[14] = "sensor_conf";
 
 	BUG_ON(!pdata);
 	BUG_ON(pdata->sensor_id >= TSENS_MAX_SENSORS);
@@ -466,6 +467,9 @@ int __devinit msm_thermal_init(struct msm_thermal_data *pdata)
                 BUG_ON(ENOMEM);
         INIT_DELAYED_WORK(&check_temp_work, check_temp);
         queue_delayed_work(check_temp_workq, &check_temp_work, 0);
+
+	snprintf(name, 14, "sensor%u_conf", msm_thermal_info.sensor_id);
+        msm_thermal_attr_group.name = name;
 
 	msm_thermal_kobject = kobject_create_and_add("msm_thermal", kernel_kobj);
 	if (msm_thermal_kobject) {
