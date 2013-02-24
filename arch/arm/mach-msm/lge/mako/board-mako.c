@@ -1397,16 +1397,16 @@ static struct msm_thermal_data msm_thermal_pdata = {
 	.poll_ms = 150,
 	.shutdown_temp = 88,
 
-	.allowed_max_high = 84,
-	.allowed_max_low = 80,
+	.allowed_max_high = 74,
+	.allowed_max_low = 70,
 	.allowed_max_freq = 384000,
 
-	.allowed_mid_high = 81,
-	.allowed_mid_low = 76,
+	.allowed_mid_high = 71,
+	.allowed_mid_low = 66,
 	.allowed_mid_freq = 810000,
 
-	.allowed_low_high = 79,
-	.allowed_low_low = 73,
+	.allowed_low_high = 69,
+	.allowed_low_low = 63,
 	.allowed_low_freq = 1350000,
 };
 
