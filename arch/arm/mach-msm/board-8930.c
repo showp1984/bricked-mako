@@ -41,6 +41,7 @@
 #include <linux/gpio_keys.h>
 #include <linux/memory.h>
 #include <linux/memblock.h>
+#include <linux/msm_thermal.h>
 
 #include <linux/slimbus/slimbus.h>
 #include <linux/mfd/wcd9xxx/core.h>
@@ -2099,6 +2100,14 @@ static struct platform_device msm_tsens_device = {
 	.id = -1,
 };
 
+static struct msm_thermal_data msm_thermal_pdata = {
+	.sensor_id = 9,
+	.poll_ms = 250,
+	.limit_temp_degC = 60,
+	.temp_hysteresis_degC = 10,
+	.freq_step = 2,
+};
+
 #ifdef CONFIG_MSM_FAKE_BATTERY
 static struct platform_device fish_battery_device = {
 	.name = "fish_battery",
@@ -2568,6 +2577,7 @@ static void __init msm8930_cdp_init(void)
 
 	platform_device_register(&msm_gpio_device);
 	msm_tsens_early_init(&msm_tsens_pdata);
+	msm_thermal_init(&msm_thermal_pdata);
 	BUG_ON(msm_rpm_init(&msm8930_rpm_data));
 	BUG_ON(msm_rpmrs_levels_init(&msm_rpmrs_data));
 

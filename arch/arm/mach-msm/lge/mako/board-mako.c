@@ -31,6 +31,7 @@
 #include <linux/ion.h>
 #include <linux/memory.h>
 #include <linux/memblock.h>
+#include <linux/msm_thermal.h>
 #include <linux/i2c/isa1200.h>
 #include <linux/gpio_keys.h>
 #include <asm/mach-types.h>
@@ -1391,6 +1392,24 @@ static struct platform_device msm_tsens_device = {
 	.id = -1,
 };
 
+static struct msm_thermal_data msm_thermal_pdata = {
+	.sensor_id = 7,
+	.poll_ms = 150,
+	.shutdown_temp = 88,
+
+	.allowed_max_high = 84,
+	.allowed_max_low = 80,
+	.allowed_max_freq = 384000,
+
+	.allowed_mid_high = 81,
+	.allowed_mid_low = 76,
+	.allowed_mid_freq = 810000,
+
+	.allowed_low_high = 79,
+	.allowed_low_low = 73,
+	.allowed_low_freq = 1350000,
+};
+
 #define MSM_SHARED_RAM_PHYS 0x80000000
 static void __init apq8064_map_io(void)
 {
@@ -1997,6 +2016,7 @@ static void __init apq8064_common_init(void)
 {
 	platform_device_register(&msm_gpio_device);
 	msm_tsens_early_init(&apq_tsens_pdata);
+        msm_thermal_init(&msm_thermal_pdata);
 	if (socinfo_init() < 0)
 		pr_err("socinfo_init() failed!\n");
 	BUG_ON(msm_rpm_init(&apq8064_rpm_data));
@@ -2025,13 +2045,17 @@ static void __init apq8064_common_init(void)
 	platform_add_devices(common_devices, ARRAY_SIZE(common_devices));
 	platform_add_devices(common_not_mpq_devices,
 			ARRAY_SIZE(common_not_mpq_devices));
-	apq8064_device_hsic_host.dev.platform_data = &msm_hsic_pdata;
-	device_initialize(&apq8064_device_hsic_host.dev);
+	if (!mako_charger_mode) {
+		apq8064_device_hsic_host.dev.platform_data = &msm_hsic_pdata;
+		device_initialize(&apq8064_device_hsic_host.dev);
+	}
 	apq8064_pm8xxx_gpio_mpp_init();
 	apq8064_init_mmc();
 
-	mdm_8064_device.dev.platform_data = &mdm_platform_data;
-	platform_device_register(&mdm_8064_device);
+	if (!mako_charger_mode) {
+		mdm_8064_device.dev.platform_data = &mdm_platform_data;
+		platform_device_register(&mdm_8064_device);
+	}
 
 	platform_device_register(&apq8064_slim_ctrl);
 	slim_register_board_info(apq8064_slim_devices,

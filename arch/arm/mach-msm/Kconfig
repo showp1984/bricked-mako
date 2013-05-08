@@ -176,6 +176,7 @@ config ARCH_MSM8960
 	select MSM_RUN_QUEUE_STATS
 	select ARM_HAS_SG_CHAIN
 	select MSM_KRAIT_WFE_FIXUP
+	select MSM_IOMMU_GPU_SYNC
 
 config ARCH_MSM8930
 	bool "MSM8930"
@@ -208,6 +209,7 @@ config ARCH_MSM8930
 	select HOLES_IN_ZONE if SPARSEMEM
 	select ARM_HAS_SG_CHAIN
 	select MSM_KRAIT_WFE_FIXUP
+	select MSM_IOMMU_GPU_SYNC
 
 config ARCH_APQ8064
 	bool "APQ8064"
@@ -235,6 +237,7 @@ config ARCH_APQ8064
 	select ARCH_SUPPORTS_MSI
 	select ARM_HAS_SG_CHAIN
 	select MSM_KRAIT_WFE_FIXUP
+	select MSM_IOMMU_GPU_SYNC
 
 config ARCH_MSM8974
 	bool "MSM8974"
@@ -1559,6 +1562,13 @@ config MSM_MPDEC
 	  This enables kernel based multi core control.
 	  (up/down hotplug based on load)
 
+config MSM_MPDEC_INPUTBOOST_CPUMIN
+	bool "Enable kernel based mpdecision"
+	depends on MSM_MPDEC
+	default n
+	help
+	  This pushes the cpu min speed to predefined values on input events.
+
 if CPU_FREQ_MSM
 
 config MSM_CPU_FREQ_SET_MIN_MAX
@@ -1591,6 +1601,12 @@ config CPU_VOLTAGE_TABLE
 	default n
 	help
 	  Krait User Votlage Control
+
+config CMDLINE_OPTIONS
+	bool "Enable cmdline s2w/khz/gov/maxscroff/scheduler command parsing"
+	default n
+	help
+	  This enables the parsing of special cmdline variables.
 
 config MSM_CPU_AVS
 	bool "Enable software controlled Adaptive Voltage Scaling (AVS)"

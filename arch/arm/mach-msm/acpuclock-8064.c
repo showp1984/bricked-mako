@@ -132,7 +132,7 @@ static struct msm_bus_scale_pdata bus_scale_data __initdata = {
 
 static struct l2_level l2_freq_tbl[] __initdata __initdata = {
 	[0]  = { {  192000, PLL_8, 0, 2, 0x00 }, 1050000, 1050000, 1 },
-        [1]  = { {  384000, PLL_8, 0, 2, 0x00 }, 1050000, 1050000, 1 },
+	[1]  = { {  384000, PLL_8, 0, 2, 0x00 }, 1050000, 1050000, 1 },
 	[2]  = { {  432000, HFPLL, 2, 0, 0x20 }, 1050000, 1050000, 2 },
 	[3]  = { {  486000, HFPLL, 2, 0, 0x24 }, 1050000, 1050000, 2 },
 	[4]  = { {  540000, HFPLL, 2, 0, 0x28 }, 1050000, 1050000, 2 },
@@ -153,7 +153,7 @@ static struct l2_level l2_freq_tbl[] __initdata __initdata = {
 
 static struct acpu_level acpu_freq_tbl_slow[] __initdata = {
 	{ 1, {   192000, PLL_8, 0, 2, 0x00 }, L2(0),   925000 },
-        { 1, {   384000, PLL_8, 0, 2, 0x00 }, L2(1),   950000 },
+	{ 1, {   384000, PLL_8, 0, 2, 0x00 }, L2(1),   950000 },
 	{ 0, {   432000, HFPLL, 2, 0, 0x20 }, L2(7),   975000 },
 	{ 1, {   486000, HFPLL, 2, 0, 0x24 }, L2(7),   975000 },
 	{ 0, {   540000, HFPLL, 2, 0, 0x28 }, L2(7),  1000000 },
@@ -309,10 +309,10 @@ static struct acpu_level acpu_freq_tbl_faster[] __initdata = {
 };
 
 static struct pvs_table pvs_tables[NUM_PVS] __initdata = {
-[PVS_SLOW]    = { acpu_freq_tbl_slow, sizeof(acpu_freq_tbl_slow),     0 },
-[PVS_NOMINAL] = { acpu_freq_tbl_nom,  sizeof(acpu_freq_tbl_nom),  25000 },
-[PVS_FAST]    = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 25000 },
-[PVS_FASTER]  = { acpu_freq_tbl_faster, sizeof(acpu_freq_tbl_faster), 25000 },
+    [PVS_SLOW]    = { acpu_freq_tbl_slow, sizeof(acpu_freq_tbl_slow),     0 },
+    [PVS_NOMINAL] = { acpu_freq_tbl_nom,  sizeof(acpu_freq_tbl_nom),  25000 },
+    [PVS_FAST]    = { acpu_freq_tbl_fast, sizeof(acpu_freq_tbl_fast), 25000 },
+    [PVS_FASTER]  = { acpu_freq_tbl_faster, sizeof(acpu_freq_tbl_faster), 25000 },
 };
 
 static struct acpuclk_krait_params acpuclk_8064_params __initdata = {
