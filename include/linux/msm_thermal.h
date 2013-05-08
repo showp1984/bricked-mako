@@ -14,6 +14,8 @@
 #ifndef __MSM_THERMAL_H
 #define __MSM_THERMAL_H
 
+#include <asm/cputime.h>
+
 struct msm_thermal_data {
 	uint32_t sensor_id;
 	uint32_t poll_ms;
@@ -30,6 +32,15 @@ struct msm_thermal_data {
 	uint32_t allowed_low_high;
 	uint32_t allowed_low_low;
 	uint32_t allowed_low_freq;
+};
+
+struct msm_thermal_stat {
+    cputime64_t time_low_start;
+    cputime64_t time_mid_start;
+    cputime64_t time_max_start;
+    cputime64_t time_low;
+    cputime64_t time_mid;
+    cputime64_t time_max;
 };
 
 #ifdef CONFIG_THERMAL_MONITOR
