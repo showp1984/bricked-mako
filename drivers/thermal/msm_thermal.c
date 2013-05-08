@@ -24,6 +24,7 @@
 #include <linux/msm_thermal.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
+#include <linux/hrtimer.h>
 #include <mach/cpufreq.h>
 
 static DEFINE_MUTEX(emergency_shutdown_mutex);
@@ -38,8 +39,48 @@ static int pre_throttled_max = 0;
 
 static struct msm_thermal_data msm_thermal_info;
 
+static struct msm_thermal_stat msm_thermal_stats = {
+    .time_low_start = 0,
+    .time_mid_start = 0,
+    .time_max_start = 0,
+    .time_low = 0,
+    .time_mid = 0,
+    .time_max = 0,
+};
+
 static struct delayed_work check_temp_work;
 static struct workqueue_struct *check_temp_workq;
+
+static void update_stats(void)
+{
+    if (msm_thermal_stats.time_low_start > 0) {
+        msm_thermal_stats.time_low += (ktime_to_ms(ktime_get()) - msm_thermal_stats.time_low_start);
+        msm_thermal_stats.time_low_start = 0;
+    }
+    if (msm_thermal_stats.time_mid_start > 0) {
+        msm_thermal_stats.time_mid += (ktime_to_ms(ktime_get()) - msm_thermal_stats.time_mid_start);
+        msm_thermal_stats.time_mid_start = 0;
+    }
+    if (msm_thermal_stats.time_max_start > 0) {
+        msm_thermal_stats.time_max += (ktime_to_ms(ktime_get()) - msm_thermal_stats.time_max_start);
+        msm_thermal_stats.time_max_start = 0;
+    }
+}
+
+static void start_stats(int status)
+{
+    switch (thermal_throttled) {
+        case 1:
+            msm_thermal_stats.time_low_start = ktime_to_ms(ktime_get());
+            break;
+        case 2:
+            msm_thermal_stats.time_mid_start = ktime_to_ms(ktime_get());
+            break;
+        case 3:
+            msm_thermal_stats.time_max_start = ktime_to_ms(ktime_get());
+            break;
+    }
+}
 
 static int update_cpu_max_freq(struct cpufreq_policy *cpu_policy,
                    int cpu, int max_freq)
@@ -76,26 +117,26 @@ static void check_temp(struct work_struct *work)
         goto reschedule;
     }
 
-        if (temp >= msm_thermal_info.shutdown_temp) {
-            mutex_lock(&emergency_shutdown_mutex);
-            pr_warn("################################\n");
-            pr_warn("################################\n");
-            pr_warn("- %u OVERTEMP! SHUTTING DOWN! -\n", msm_thermal_info.shutdown_temp);
-            pr_warn("- cur temp:%lu measured by:%u -\n", temp, msm_thermal_info.sensor_id);
-            pr_warn("################################\n");
-            pr_warn("################################\n");
-            /* orderly poweroff tries to power down gracefully
-               if it fails it will force it. */
-            orderly_poweroff(true);
-            for_each_possible_cpu(cpu) {
-                update_policy = true;
-                max_freq = msm_thermal_info.allowed_max_freq;
-                thermal_throttled = 3;
-                pr_warn("msm_thermal: Emergency throttled CPU%i to %u! temp:%lu\n",
-                        cpu, msm_thermal_info.allowed_max_freq, temp);
-            }
-            mutex_unlock(&emergency_shutdown_mutex);
+    if (temp >= msm_thermal_info.shutdown_temp) {
+        mutex_lock(&emergency_shutdown_mutex);
+        pr_warn("################################\n");
+        pr_warn("################################\n");
+        pr_warn("- %u OVERTEMP! SHUTTING DOWN! -\n", msm_thermal_info.shutdown_temp);
+        pr_warn("- cur temp:%lu measured by:%u -\n", temp, msm_thermal_info.sensor_id);
+        pr_warn("################################\n");
+        pr_warn("################################\n");
+        /* orderly poweroff tries to power down gracefully
+           if it fails it will force it. */
+        orderly_poweroff(true);
+        for_each_possible_cpu(cpu) {
+            update_policy = true;
+            max_freq = msm_thermal_info.allowed_max_freq;
+            thermal_throttled = 3;
+            pr_warn("msm_thermal: Emergency throttled CPU%i to %u! temp:%lu\n",
+                    cpu, msm_thermal_info.allowed_max_freq, temp);
         }
+        mutex_unlock(&emergency_shutdown_mutex);
+    }
 
     for_each_possible_cpu(cpu) {
         update_policy = false;
@@ -181,7 +222,8 @@ static void check_temp(struct work_struct *work)
                         temp, msm_thermal_info.sensor_id);
             }
         }
-
+        update_stats();
+        start_stats(thermal_throttled);
         if (update_policy)
             update_cpu_max_freq(cpu_policy, cpu, max_freq);
 
@@ -451,6 +493,39 @@ static struct attribute_group msm_thermal_attr_group = {
 
 /********* STATS START *********/
 
+static ssize_t show_throttle_times(struct kobject *a, struct attribute *b,
+                                 char *buf)
+{
+    ssize_t len = 0;
+
+    if (thermal_throttled == 1) {
+        len += sprintf(buf + len, "%s %llu\n", "low",
+                       (msm_thermal_stats.time_low +
+                        (ktime_to_ms(ktime_get()) -
+                         msm_thermal_stats.time_low_start)));
+    } else
+        len += sprintf(buf + len, "%s %llu\n", "low", msm_thermal_stats.time_low);
+
+    if (thermal_throttled == 2) {
+        len += sprintf(buf + len, "%s %llu\n", "mid",
+                       (msm_thermal_stats.time_mid +
+                        (ktime_to_ms(ktime_get()) -
+                         msm_thermal_stats.time_mid_start)));
+    } else
+        len += sprintf(buf + len, "%s %llu\n", "mid", msm_thermal_stats.time_mid);
+
+    if (thermal_throttled == 3) {
+        len += sprintf(buf + len, "%s %llu\n", "max",
+                       (msm_thermal_stats.time_max +
+                        (ktime_to_ms(ktime_get()) -
+                         msm_thermal_stats.time_max_start)));
+    } else
+        len += sprintf(buf + len, "%s %llu\n", "max", msm_thermal_stats.time_max);
+
+    return len;
+}
+define_one_global_ro(throttle_times);
+
 static ssize_t show_is_throttled(struct kobject *a, struct attribute *b,
                                  char *buf)
 {
@@ -460,6 +535,7 @@ define_one_global_ro(is_throttled);
 
 static struct attribute *msm_thermal_stats_attributes[] = {
     &is_throttled.attr,
+    &throttle_times.attr,
     NULL
 };
 
