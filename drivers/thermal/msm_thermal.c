@@ -449,6 +449,26 @@ static struct attribute_group msm_thermal_attr_group = {
 	.attrs = msm_thermal_attributes,
 	.name = "conf",
 };
+
+/********* STATS START *********/
+
+static ssize_t show_is_throttled (struct kobject *a, struct attribute *b,
+                                  char *buf)
+{
+	return sprintf(buf, "%u\n", thermal_throttled);
+}
+define_one_global_ro(is_throttled);
+
+static struct attribute *msm_thermal_stats_attributes[] = {
+    &is_throttled.attr,
+    NULL
+};
+
+
+static struct attribute_group msm_thermal_stats_attr_group = {
+    .attrs = msm_thermal_stats_attributes,
+    .name = "stats",
+};
 /**************************** SYSFS END ****************************/
 
 int __devinit msm_thermal_init(struct msm_thermal_data *pdata)
@@ -474,6 +494,11 @@ int __devinit msm_thermal_init(struct msm_thermal_data *pdata)
 		if (rc) {
 			pr_warn("msm_thermal: sysfs: ERROR, could not create sysfs group");
 		}
+        rc = sysfs_create_group(msm_thermal_kobject,
+                                &msm_thermal_stats_attr_group);
+        if (rc) {
+            pr_warn("msm_thermal: sysfs: ERROR, could not create sysfs stats group");
+        }
 	} else
 		pr_warn("msm_thermal: sysfs: ERROR, could not create sysfs kobj");
 
