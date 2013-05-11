@@ -26,6 +26,8 @@
 #include <linux/hrtimer.h>
 #include <linux/input/lge_touch_core.h>
 
+#define SWEEP2WAKE_I2C_SLEEP 40
+
 extern int s2w_switch;
 extern bool scr_suspended;
 extern bool scr_on_touch;
