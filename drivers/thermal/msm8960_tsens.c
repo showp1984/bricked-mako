@@ -232,13 +232,6 @@ static int tsens_tz_get_temp(struct thermal_zone_device *thermal,
 	return 0;
 }
 
-
-static uint32_t tsens_get_num_temp_devs(void)
-{
-        return tmdev->tsens_num_sensor;
-}
-EXPORT_SYMBOL(tsens_get_num_temp_devs);
-
 int tsens_get_temp(struct tsens_device *device, unsigned long *temp)
 {
 	if (!tmdev)
