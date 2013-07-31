@@ -684,3 +684,5 @@ int __init msm_thermal_device_init(void)
 {
 	return platform_driver_register(&msm_thermal_device_driver);
 }
+
+fs_initcall(msm_thermal_device_init);
