@@ -47,7 +47,7 @@ static void __iomem *reset_core1_base;
  * observers, irrespective of whether they're taking part in coherency
  * or not.  This is necessary for the hotplug code to work reliably.
  */
-static void __cpuinit write_pen_release(int val)
+static void write_pen_release(int val)
 {
 	pen_release = val;
 	smp_wmb();
@@ -91,7 +91,7 @@ static void clear_pending_spi(unsigned int irq)
 	local_irq_enable();
 }
 
-void __cpuinit platform_secondary_init(unsigned int cpu)
+void platform_secondary_init(unsigned int cpu)
 {
 	pr_debug("CPU%u: Booted secondary processor\n", cpu);
 
@@ -124,7 +124,7 @@ void __cpuinit platform_secondary_init(unsigned int cpu)
 	spin_unlock(&boot_lock);
 }
 
-static int  __cpuinit msm8625_release_secondary(void)
+static int  msm8625_release_secondary(void)
 {
 	void __iomem *base_ptr;
 	int value = 0;
@@ -166,7 +166,7 @@ void __iomem *core1_reset_base(void)
 	return reset_core1_base;
 }
 
-int __cpuinit boot_secondary(unsigned int cpu, struct task_struct *idle)
+int boot_secondary(unsigned int cpu, struct task_struct *idle)
 {
 	unsigned long timeout;
 

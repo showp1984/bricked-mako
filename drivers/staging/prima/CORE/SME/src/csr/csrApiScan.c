@@ -3622,7 +3622,7 @@ void csrConstructCurrentValidChannelList( tpAniSirGlobal pMac, tDblLinkList *pCh
 tANI_BOOLEAN csrLearnCountryInformation( tpAniSirGlobal pMac, tSirBssDescription *pSirBssDesc,
                                          tDot11fBeaconIEs *pIes, tANI_BOOLEAN fForce)
 {
-    tANI_U8 Num2GChannels, bMaxNumChn;
+    tANI_U8 Num2GChannels = 0, bMaxNumChn = 0;
     eHalStatus status;
     tANI_BOOLEAN fRet = eANI_BOOLEAN_FALSE;
     v_REGDOMAIN_t domainId;

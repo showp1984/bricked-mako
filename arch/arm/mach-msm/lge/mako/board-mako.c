@@ -1320,10 +1320,20 @@ static struct platform_device msm_tsens_device = {
 
 static struct msm_thermal_data msm_thermal_pdata = {
 	.sensor_id = 7,
-	.poll_ms = 250,
-	.limit_temp_degC = 60,
-	.temp_hysteresis_degC = 10,
-	.freq_step = 2,
+	.poll_ms = 150,
+	.shutdown_temp = 88,
+
+	.allowed_max_high = 84,
+	.allowed_max_low = 80,
+	.allowed_max_freq = 384000,
+
+	.allowed_mid_high = 81,
+	.allowed_mid_low = 76,
+	.allowed_mid_freq = 810000,
+
+	.allowed_low_high = 79,
+	.allowed_low_low = 73,
+	.allowed_low_freq = 1350000,
 };
 
 #define MSM_SHARED_RAM_PHYS 0x80000000
@@ -1450,13 +1460,21 @@ static struct msm_rpmrs_platform_data msm_rpmrs_data __initdata = {
 		[MSM_RPMRS_VDD_MEM_RET_LOW]	= 750000,
 		[MSM_RPMRS_VDD_MEM_RET_HIGH]	= 750000,
 		[MSM_RPMRS_VDD_MEM_ACTIVE]	= 1050000,
+#ifdef CONFIG_CPU_OVERCLOCK
+		[MSM_RPMRS_VDD_MEM_MAX]		= 1250000,
+#else
 		[MSM_RPMRS_VDD_MEM_MAX]		= 1150000,
+#endif
 	},
 	.vdd_dig_levels = {
 		[MSM_RPMRS_VDD_DIG_RET_LOW]	= 500000,
 		[MSM_RPMRS_VDD_DIG_RET_HIGH]	= 750000,
 		[MSM_RPMRS_VDD_DIG_ACTIVE]	= 950000,
+#ifdef CONFIG_CPU_OVERCLOCK
+		[MSM_RPMRS_VDD_DIG_MAX]		= 1250000,
+#else
 		[MSM_RPMRS_VDD_DIG_MAX]		= 1150000,
+#endif
 	},
 	.vdd_mask = 0x7FFFFF,
 	.rpmrs_target_id = {
@@ -1926,7 +1944,7 @@ static void __init apq8064_common_init(void)
 
 	platform_device_register(&msm_gpio_device);
 	msm_tsens_early_init(&apq_tsens_pdata);
-	msm_thermal_init(&msm_thermal_pdata);
+        msm_thermal_init(&msm_thermal_pdata);
 	if (socinfo_init() < 0)
 		pr_err("socinfo_init() failed!\n");
 	BUG_ON(msm_rpm_init(&apq8064_rpm_data));
