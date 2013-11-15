@@ -384,6 +384,7 @@ EXPORT_SYMBOL_GPL(cpu_up);
 #ifdef CONFIG_PM_SLEEP_SMP
 static cpumask_var_t frozen_cpus;
 
+#if !defined(CONFIG_MSM_MPDEC)
 void __weak arch_disable_nonboot_cpus_begin(void)
 {
 }
@@ -469,6 +470,7 @@ void __ref enable_nonboot_cpus(void)
 out:
 	cpu_maps_update_done();
 }
+#endif
 
 static int __init alloc_frozen_cpus(void)
 {
