@@ -2040,7 +2040,7 @@ static void touch_early_suspend(struct early_suspend *h)
 		return;
 	}
 
-#ifdef CONFIG_TOUCHSCREEN_SWEEP2WAKE
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
 	if (prevent_sleep) {
 		enable_irq_wake(ts->client->irq);
 		release_all_ts_event(ts);
