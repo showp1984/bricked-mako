@@ -1713,8 +1713,12 @@ static void __pm8921_charger_vbus_draw(unsigned int mA)
 
 		/* Check if IUSB_FINE_RES is available */
 		while ((usb_ma_table[i].value & PM8917_IUSB_FINE_RES)
-				&& !the_chip->iusb_fine_res)
-			i--;
+				&& !the_chip->iusb_fine_res) {
+			if (i>0)
+				i--;
+			else
+				break;
+        }
 		if (i < 0)
 			i = 0;
 		rc = pm_chg_iusbmax_set(the_chip, i);
