@@ -1438,7 +1438,7 @@ static int mixer_ctl_procunit_get(struct snd_kcontrol *kcontrol, struct snd_ctl_
 static int mixer_ctl_procunit_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct usb_mixer_elem_info *cval = kcontrol->private_data;
-	int val, oval, err;
+	int val=0, oval=0, err=0;
 
 	err = get_cur_ctl_value(cval, cval->control << 8, &oval);
 	if (err < 0) {
@@ -1720,7 +1720,7 @@ static int mixer_ctl_selector_get(struct snd_kcontrol *kcontrol, struct snd_ctl_
 static int mixer_ctl_selector_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct usb_mixer_elem_info *cval = kcontrol->private_data;
-	int val, oval, err;
+	int val=0, oval=0, err=0;
 
 	err = get_cur_ctl_value(cval, cval->control << 8, &oval);
 	if (err < 0) {
