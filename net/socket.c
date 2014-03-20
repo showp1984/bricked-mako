@@ -1322,7 +1322,7 @@ EXPORT_SYMBOL(sock_create_kern);
 SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 {
 	int retval;
-	struct socket *sock;
+	struct socket *sock = NULL;
 	int flags;
 
 	/* Check the SOCK_* constants for consistency.  */
