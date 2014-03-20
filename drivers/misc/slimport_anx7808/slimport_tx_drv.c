@@ -119,7 +119,7 @@ void sp_tx_variable_init(void)
 
 static void sp_tx_api_m_gen_clk_select(unchar bspreading)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_M_CALCU_CTRL, &c);
 	if (bspreading) {
@@ -160,7 +160,7 @@ static void sp_tx_link_phy_initialization(void)
 
 void sp_tx_initialization(void)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_EXTRA_ADDR_REG, &c);
 	c |= I2C_EXTRA_ADDR | I2C_STRETCH_DISABLE;
@@ -221,7 +221,7 @@ void sp_tx_initialization(void)
 
 void sp_tx_power_down(enum SP_TX_POWER_BLOCK sp_tx_pd_block)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P2, SP_POWERD_CTRL_REG, &c);
 	if (sp_tx_pd_block == SP_TX_PWR_REG)
@@ -245,7 +245,7 @@ void sp_tx_power_down(enum SP_TX_POWER_BLOCK sp_tx_pd_block)
 
 void sp_tx_power_on(enum SP_TX_POWER_BLOCK sp_tx_pd_block)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P2, SP_POWERD_CTRL_REG, &c);
 	if (sp_tx_pd_block == SP_TX_PWR_REG)
@@ -289,7 +289,7 @@ void sp_tx_rst_aux(void)
 
 static unchar sp_tx_wait_aux_finished(void)
 {
-	unchar c;
+	unchar c=0;
 	unchar cCnt;
 	cCnt = 0;
 
@@ -399,7 +399,7 @@ static unchar sp_tx_aux_dpcdwrite_bytes(unchar addrh, unchar addrm,
 static void sp_tx_aux_dpcdwrite_byte(unchar addrh, unchar addrm,
 					unchar addrl, unchar data1)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_write_reg(TX_P0, SP_TX_BUF_DATA_COUNT_REG, 0x80);
 	c = (0 << 4) | 0x08;
@@ -425,7 +425,7 @@ static void sp_tx_aux_dpcdwrite_byte(unchar addrh, unchar addrm,
 
 void sp_tx_set_colorspace(void)
 {
-	unchar c;
+	unchar c=0;
 	unchar color_space;
 
 	sp_read_reg(RX_P1, HDMI_RX_AVI_DATA00_REG, &color_space);
@@ -437,7 +437,7 @@ void sp_tx_set_colorspace(void)
 
 static void sp_tx_vsi_setup(void)
 {
-	unchar c;
+	unchar c=0;
 	int i;
 
 	for (i = 0; i < 10; i++) {
@@ -448,7 +448,7 @@ static void sp_tx_vsi_setup(void)
 
 static void sp_tx_mpeg_setup(void)
 {
-	unchar c;
+	unchar c=0;
 	int i;
 
 	for (i = 0; i < 10; i++) {
@@ -459,7 +459,7 @@ static void sp_tx_mpeg_setup(void)
 
 static void sp_tx_get_int_status(enum INTStatus IntIndex, unchar *cStatus)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P2, SP_COMMON_INT_STATUS1 + IntIndex, &c);
 	sp_write_reg(TX_P2, SP_COMMON_INT_STATUS1 + IntIndex, c);
@@ -469,7 +469,7 @@ static void sp_tx_get_int_status(enum INTStatus IntIndex, unchar *cStatus)
 
 static unchar sp_tx_get_pll_lock_status(void)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_DEBUG_REG1, &c);
 	if (c & DEBUG_PLL_LOCK)
@@ -480,7 +480,7 @@ static unchar sp_tx_get_pll_lock_status(void)
 
 void sp_tx_set_3d_packets(void)
 {
-	unchar c;
+	unchar c=0;
 	unchar hdmi_video_format, vsi_header, v3d_structure;
 
 	if (g_vsi_got) {
@@ -651,7 +651,7 @@ static void sp_tx_lvttl_bit_mapping(void)
 
 void sp_tx_enable_video_input(unchar enable)
 {
-	unchar c;
+	unchar c=0;
 
 	if (enable) {
 		sp_read_reg(TX_P2, SP_TX_VID_CTRL1_REG, &c);
@@ -672,7 +672,7 @@ void sp_tx_enable_video_input(unchar enable)
 
 static void sp_tx_enhancemode_set(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_tx_aux_dpcdread_bytes(0x00, 0x00, DPCD_MAX_LANE_COUNT, 1, &c);
 
 	if (c & ENHANCED_FRAME_CAP) {
@@ -701,7 +701,7 @@ static void sp_tx_enhancemode_set(void)
 
 static void sp_tx_hdcp_reauth(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_read_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, &c);
 	c |= RE_AUTH;
 	sp_write_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, c);
@@ -717,7 +717,7 @@ static void sp_tx_clean_hdcp_status(void)
 
 static void sp_tx_hdcp_encryption_disable(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_read_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, &c);
 	c &= ~ENC_EN;
 	sp_write_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, c);
@@ -725,7 +725,7 @@ static void sp_tx_hdcp_encryption_disable(void)
 
 static void sp_tx_hdcp_encryption_enable(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_read_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, &c);
 	c |= ENC_EN;
 	sp_write_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, c);
@@ -733,7 +733,7 @@ static void sp_tx_hdcp_encryption_enable(void)
 
 static void sp_tx_hw_hdcp_enable(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_read_reg(TX_P0, SP_TX_HDCP_CTRL0_REG, &c);
 	c &= ~ENC_EN;
 	c &= ~HARD_AUTH_EN;
@@ -765,7 +765,7 @@ void sp_tx_clean_hdcp(void)
 static void sp_tx_pclk_calc(unchar *hbr_rbr)
 {
 	ulong str_clk = 0;
-	unchar c;
+	unchar c=0;
 	unchar link_bw_current = *hbr_rbr;
 
 	switch (link_bw_current) {
@@ -999,7 +999,7 @@ unchar sp_tx_chip_located(void)
 
 void sp_tx_vbus_poweron(void)
 {
-	unchar c;
+	unchar c=0;
 	int i;
 
 	for (i = 0; i < 5; i++) {
@@ -1027,7 +1027,7 @@ void sp_tx_vbus_poweron(void)
 
 void sp_tx_vbus_powerdown(void)
 {
-	unchar c;
+	unchar c=0;
 
 	/*  Disableable power 3.3v out */
 	sp_read_reg(TX_P2, SP_TX_PLL_FILTER_CTRL11, &c);
@@ -1042,7 +1042,7 @@ void sp_tx_vbus_powerdown(void)
 
 static void sp_tx_spread_enable(unchar benable)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SSC_CTRL_REG1, &c);
 
@@ -1071,7 +1071,7 @@ static void sp_tx_spread_enable(unchar benable)
 
 static void sp_tx_config_ssc(enum SP_LINK_BW linkbw)
 {
-	unchar c;
+	unchar c=0;
 
 
 	sp_write_reg(TX_P0, SSC_CTRL_REG1, 0x00);
@@ -1112,7 +1112,7 @@ static void sp_tx_config_ssc(enum SP_LINK_BW linkbw)
 static void sp_tx_audioinfoframe_setup(void)
 {
 	int i;
-	unchar c;
+	unchar c=0;
 	sp_read_reg(RX_P1, HDMI_RX_AUDIO_TYPE_REG, &c);
 	sp_tx_audioinfoframe.type = c;
 	sp_read_reg(RX_P1, HDMI_RX_AUDIO_VER_REG, &c);
@@ -1153,7 +1153,7 @@ static void __sp_tx_enable_audio_output(void)
 
 static void sp_tx_enable_audio_output(unchar benable)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_AUD_CTRL, &c);
 
@@ -1183,7 +1183,7 @@ static void sp_tx_enable_audio_output(unchar benable)
 
 static void sp_tx_get_link_bw(unchar *bwtype)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_LINK_BW_SET_REG, &c);
 
@@ -1294,7 +1294,7 @@ static void sp_tx_get_rx_bw(unchar bMax, unchar *cBw)
 
 static void sp_tx_edid_read_initial(void)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_write_reg(TX_P0, SP_TX_AUX_ADDR_7_0_REG, 0x50);
 	sp_write_reg(TX_P0, SP_TX_AUX_ADDR_15_8_REG, 0);
@@ -1480,7 +1480,7 @@ static void sp_tx_parse_segments_edid(unchar segment, unchar offset)
 
 static unchar sp_tx_get_edid_block(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_tx_aux_wr(0x00);
 	sp_tx_aux_rd(0x01);
 	sp_read_reg(TX_P0, SP_TX_BUF_DATA_0_REG, &c);
@@ -1499,7 +1499,7 @@ static unchar sp_tx_get_edid_block(void)
 
 static void sp_tx_addronly_set(unchar bSet)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_AUX_CTRL_REG2, &c);
 	if (bSet) {
@@ -1514,7 +1514,7 @@ static void sp_tx_addronly_set(unchar bSet)
 static void sp_tx_load_packet(enum PACKETS_TYPE type)
 {
 	int i;
-	unchar c;
+	unchar c=0;
 
 	switch (type) {
 	case AVI_PACKETS:
@@ -1581,7 +1581,7 @@ static void sp_tx_load_packet(enum PACKETS_TYPE type)
 
 void sp_tx_config_packets(enum PACKETS_TYPE bType)
 {
-	unchar c;
+	unchar c=0;
 
 	switch (bType) {
 	case AVI_PACKETS:
@@ -1673,7 +1673,7 @@ void sp_tx_config_packets(enum PACKETS_TYPE bType)
 
 void sp_tx_avi_setup(void)
 {
-	unchar c;
+	unchar c=0;
 	int i;
 	for (i = 0; i < 13; i++) {
 		sp_read_reg(RX_P1, (HDMI_RX_AVI_DATA00_REG + i), &c);
@@ -1686,7 +1686,7 @@ static unchar sp_tx_bw_lc_sel(void)
 	unchar over_bw = 0;
 	uint pixel_clk = 0;
 	enum HDMI_color_depth hdmi_input_color_depth = Hdmi_legacy;
-	unchar c;
+	unchar c=0;
 
 	pr_info("input pclk = %d\n", (unsigned int)pclk);
 
@@ -1748,7 +1748,7 @@ static unchar sp_tx_bw_lc_sel(void)
 
 unchar sp_tx_hw_link_training(void)
 {
-	unchar c;
+	unchar c=0;
 
 	if (!sp_tx_hw_lt_enable) {
 		pr_notice("Hardware link training");
@@ -1830,7 +1830,7 @@ uint sp_tx_link_err_check(void)
 
 unchar sp_tx_lt_pre_config(void)
 {
-	unchar c;
+	unchar c=0;
 	unchar link_bw = 0;
 
 	if (!sp_tx_link_config_done) {
@@ -1926,7 +1926,7 @@ unchar sp_tx_lt_pre_config(void)
 
 void sp_tx_video_mute(unchar enable)
 {
-	unchar c;
+	unchar c=0;
 
 	if (enable) {
 		sp_read_reg(TX_P2, SP_TX_VID_CTRL1_REG, &c);
@@ -1941,7 +1941,7 @@ void sp_tx_video_mute(unchar enable)
 
 void sp_tx_send_message(enum SP_TX_SEND_MSG message)
 {
-	unchar c;
+	unchar c=0;
 
 	switch (message) {
 	case MSG_OCM_EN:
@@ -2039,7 +2039,7 @@ unchar sp_tx_get_cable_type(void)
 
 bool sp_tx_get_hdmi_connection(void)
 {
-	unchar c;
+	unchar c=0;
 	msleep(200);
 
 	sp_tx_aux_dpcdread_bytes(0x00, 0x05, 0x18, 1, &c);
@@ -2051,7 +2051,7 @@ bool sp_tx_get_hdmi_connection(void)
 
 bool sp_tx_get_vga_connection(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_tx_aux_dpcdread_bytes(0x00, 0x02, DPCD_SINK_COUNT, 1, &c);
 	if (c & 0x01)
 		return TRUE;
@@ -2061,7 +2061,7 @@ bool sp_tx_get_vga_connection(void)
 
 static bool sp_tx_get_ds_video_status(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_tx_aux_dpcdread_bytes(0x00, 0x05, 0x27, 1, &c);
 	if (c & 0x01)
 		return TRUE;
@@ -2071,7 +2071,7 @@ static bool sp_tx_get_ds_video_status(void)
 
 bool sp_tx_get_dp_connection(void)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_tx_aux_dpcdread_bytes(0x00, 0x02, DPCD_SINK_COUNT, 1, &c);
 	if (c & 0x1f) {
@@ -2086,7 +2086,7 @@ bool sp_tx_get_dp_connection(void)
 void sp_tx_edid_read(void)
 {
 	unchar i, j, edid_block = 0, segment = 0, offset = 0;
-	unchar c;
+	unchar c=0;
 	/*Add bandwidth check to support low
 	resolution for VGA and myDP monitor*/
 	sp_tx_get_rx_bw(1, &c);
@@ -2186,7 +2186,7 @@ static void sp_tx_pll_changed_int_handler(void)
 
 static void sp_tx_auth_done_int_handler(void)
 {
-	unchar c;
+	unchar c=0;
 
 	sp_read_reg(TX_P0, SP_TX_HDCP_STATUS, &c);
 
@@ -2311,7 +2311,7 @@ static void sp_tx_link_change_int_handler(void)
 
 static void sp_tx_polling_err_int_handler(void)
 {
-	unchar c;
+	unchar c=0;
 	int i;
 
 	if ((sp_tx_system_state < STATE_CABLE_PLUG) || sp_tx_pd_mode)
@@ -2628,7 +2628,7 @@ static void sp_tx_sink_irq_int_handler(void)
 
 void sp_tx_hdcp_process(void)
 {
-	unchar c;
+	unchar c=0;
 	int i;
 
 	if (!sp_tx_hdcp_capable_chk) {
@@ -2792,7 +2792,7 @@ void sp_tx_int_irq_handler(void)
 /* ***************************************************************** */
 void hdmi_rx_set_hpd(unchar enable)
 {
-	unchar c;
+	unchar c=0;
 
 	if (enable) {
 		/* set HPD high */
@@ -2811,7 +2811,7 @@ void hdmi_rx_set_hpd(unchar enable)
 
 void hdmi_rx_set_termination(unchar enable)
 {
-	unchar c;
+	unchar c=0;
 
 	if (enable) {
 		/* set termination high */
@@ -2871,7 +2871,7 @@ static void hdmi_rx_set_sys_state(enum HDMI_RX_System_State ss)
 
 static void hdmi_rx_mute_video(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_info("Mute Video.");
 	sp_read_reg(RX_P0, HDMI_RX_HDMI_MUTE_CTRL_REG, &c);
@@ -2882,7 +2882,7 @@ static void hdmi_rx_mute_video(void)
 
 static void hdmi_rx_unmute_video(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_info("Unmute Video.");
 	sp_read_reg(RX_P0, HDMI_RX_HDMI_MUTE_CTRL_REG, &c);
@@ -2893,7 +2893,7 @@ static void hdmi_rx_unmute_video(void)
 
 static void hdmi_rx_mute_audio(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_info("Mute Audio.");
 	sp_read_reg(RX_P0, HDMI_RX_HDMI_MUTE_CTRL_REG, &c);
@@ -2904,7 +2904,7 @@ static void hdmi_rx_mute_audio(void)
 
 static void hdmi_rx_unmute_audio(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_info("Unmute Audio.");
 	sp_read_reg(RX_P0, HDMI_RX_HDMI_MUTE_CTRL_REG, &c);
@@ -3091,7 +3091,7 @@ static void hdmi_rx_show_video_info(void)
 
 static void hdmi_rx_show_audio_info(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_info("Audio Fs = ");
 	sp_read_reg(RX_P0, HDMI_RX_AUD_IN_CH_STATUS4_REG, &c);
@@ -3160,7 +3160,7 @@ static void hdmi_rx_tmds_phy_initialization(void)
 
 void hdmi_rx_initialization(void)
 {
-	unchar c;
+	unchar c=0;
 
 	hdmi_rx_init_var();
 
@@ -3250,7 +3250,7 @@ void hdmi_rx_initialization(void)
 
 static void hdmi_rx_clk_det_int(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_notice("*HDMI_RX Interrupt: Pixel Clock Change.\n");
 	if (sp_tx_system_state > STATE_CONFIG_HDMI) {
@@ -3282,7 +3282,7 @@ static void hdmi_rx_clk_det_int(void)
 
 static void hdmi_rx_sync_det_int(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_notice("*HDMI_RX Interrupt: Sync Detect.");
 
@@ -3320,7 +3320,7 @@ static void hdmi_rx_sync_det_int(void)
 
 static void hdmi_rx_hdmi_dvi_int(void)
 {
-	unchar c;
+	unchar c=0;
 
 	pr_notice("*HDMI_RX Interrupt: HDMI-DVI Mode Change.");
 	sp_read_reg(RX_P0, HDMI_RX_HDMI_STATUS_REG, &c);
@@ -3358,7 +3358,7 @@ static void hdmi_rx_avmute_int(void)
 
 static void hdmi_rx_cts_rcv_int(void)
 {
-	unchar c;
+	unchar c=0;
 	g_cts_got = 1;
 	sp_read_reg(RX_P0, HDMI_RX_SYS_STATUS_REG, &c);
 
@@ -3383,7 +3383,7 @@ static void hdmi_rx_cts_rcv_int(void)
 
 static void hdmi_rx_audio_rcv_int(void)
 {
-	unchar c;
+	unchar c=0;
 	g_audio_got = 1;
 
 	sp_read_reg(RX_P0, HDMI_RX_SYS_STATUS_REG, &c);
@@ -3440,7 +3440,7 @@ static void hdmi_rx_new_avi_int(void)
 
 static void hdmi_rx_new_gcp_int(void)
 {
-	unchar c;
+	unchar c=0;
 	sp_read_reg(RX_P1, HDMI_RX_GENERAL_CTRL, &c);
 	if (c&SET_AVMUTE) {
 		if (!g_video_muted)
@@ -3461,7 +3461,7 @@ static void hdmi_rx_new_gcp_int(void)
 static void hdmi_rx_new_vsi_int(void)
 {
 	if (anx7808_ver_ba) {
-		unchar c;
+		unchar c=0;
 		unchar hdmi_video_format, vsi_header, v3d_structure;
 		pr_err("*HDMI_RX Interrupt: NEW VSI packet.\n");
 		sp_read_reg(TX_P0, SP_TX_3D_VSC_CTRL, &c);
@@ -3522,7 +3522,7 @@ static void hdmi_rx_new_vsi_int(void)
 static void hdmi_rx_no_vsi_int(void)
 {
 	if (anx7808_ver_ba) {
-		unchar c;
+		unchar c=0;
 		sp_read_reg(TX_P0, SP_TX_3D_VSC_CTRL, &c);
 		if (c&INFO_FRAME_VSC_EN) {
 			pr_err("No new VSI is received, disable  VSC packet\n");
@@ -3536,7 +3536,7 @@ static void hdmi_rx_no_vsi_int(void)
 
 void sp_tx_config_hdmi_input(void)
 {
-	unchar c;
+	unchar c=0;
 	unchar avmute_status, sys_status;
 
 	sp_read_reg(RX_P0, HDMI_RX_SYS_STATUS_REG, &sys_status);
