@@ -2345,9 +2345,9 @@ static void sp_tx_polling_err_int_handler(void)
 
 static void sp_tx_irq_isr(void)
 {
-	unchar c, c1, lane0_1_status, sl_cr, al;
-	unchar IRQ_Vector, Int_vector1, Int_vector2;
-	unchar test_vector;
+	unchar c=0, c1=0, lane0_1_status=0, sl_cr=0, al=0;
+	unchar IRQ_Vector=0, Int_vector1=0, Int_vector2=0;
+	unchar test_vector=0;
 
 	sp_tx_aux_dpcdread_bytes(0x00, 0x02, DPCD_SERVICE_IRQ_VECTOR, 1,
 			bytebuf);
