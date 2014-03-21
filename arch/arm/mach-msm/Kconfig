@@ -1654,6 +1654,12 @@ config CPU_OVERCLOCK
 	help
 	  Enable CPU overclock for kraig apq8064 socs
 
+config CPU_UNDERCLOCK
+	bool "Enable CPU Underclocking"
+	default n
+	help
+	  Krait underclocking
+
 config CPU_VOLTAGE_TABLE
 	bool "Enable CPU Voltage Table via sysfs for adjustements"
 	default n
