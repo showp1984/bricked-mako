@@ -106,10 +106,13 @@ if [ ! -d "$TOOLCHAIN_D" ]; then
 fi
 if [ ! -d "$TOOLCHAIN_D/android-toolchain-eabi" ]; then
     gototoolchaind
-    wget http://bricked.de/downloads/android-toolchain-eabi-4.8-2014.03-x86.tar.bz2
+#    wget http://bricked.de/downloads/android-toolchain-eabi-4.8-2014.03-x86.tar.bz2
+    wget http://bricked.de/downloads/android-toolchain-eabi.zip
     echo "[BUILD]: Extracting...";
-    tar jxf android-toolchain-eabi-4.8-2014.03-x86.tar.bz2
-    rm -f android-toolchain-eabi-4.8-2014.03-x86.tar.bz2
+    unzip android-toolchain-eabi.zip
+    rm android-toolchain-eabi.zip
+#    tar jxf android-toolchain-eabi-4.8-2014.03-x86.tar.bz2
+#    rm -f android-toolchain-eabi-4.8-2014.03-x86.tar.bz2
 fi
 
 #check ccache configuration
@@ -131,6 +134,9 @@ export CCACHE_DIR=$USERCCDIR
 ###CCACHE CONFIGURATION ENDS HERE, DO NOT MESS WITH IT!!!
 
 echo "[BUILD]: Setting cross compile env vars...";
+SAVEDPATH=$PATH;
+SAVEDCROSS_COMPILE=$CROSS_COMPILE;
+SAVEDARCH=$ARCH;
 export ARCH=$CROSSARCH
 export CROSS_COMPILE=$CROSSCC
 export PATH=$TOOLCHAIN_CCACHE:${PATH}:$TOOLCHAIN
@@ -310,4 +316,6 @@ fi
 
 echo "[BUILD]: All done!...";
 gotosource
-
+export PATH=$SAVEDPATH
+export CROSS_COMPILE=$SAVEDCROSS_COMPILE;
+export ARCH=$SAVEDARCH;
