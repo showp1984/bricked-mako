@@ -164,9 +164,9 @@ gotoout() {
 if [ ! $USEPREBUILT -eq 0 ]; then
     if [ ! -d "$PREBUILT" ]; then
         gotoprebuilt
-        wget http://bricked.de/downloads/prebuilts/mako_prebuilt.zip
-        unzip mako_prebuilt.zip
-        rm mako_prebuilt.zip
+        wget http://bricked.de/downloads/prebuilts/${CODENAME}_prebuilt.zip
+        unzip ${CODENAME}_prebuilt.zip
+        rm ${CODENAME}_prebuilt.zip
     fi
 fi
 
