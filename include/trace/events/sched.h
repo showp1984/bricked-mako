@@ -144,7 +144,7 @@ TRACE_EVENT(sched_switch,
 		  __print_flags(__entry->prev_state & (TASK_STATE_MAX-1), "|",
 				{ 1, "S"} , { 2, "D" }, { 4, "T" }, { 8, "t" },
 				{ 16, "Z" }, { 32, "X" }, { 64, "x" },
-				{ 128, "W" }) : "R",
+				{ 128, "K" }, { 256, "W" }, { 512, "P" }) : "R",
 		__entry->prev_state & TASK_STATE_MAX ? "+" : "",
 		__entry->next_comm, __entry->next_pid, __entry->next_prio)
 );
@@ -202,6 +202,56 @@ TRACE_EVENT(sched_cpu_hotplug,
 
 	TP_printk("cpu %d %s error=%d", __entry->affected_cpu,
 		__entry->status ? "online" : "offline", __entry->error)
+);
+
+/*
+ * Tracepoint for load balancing:
+ */
+#if NR_CPUS > 32
+#error "Unsupported NR_CPUS for lb tracepoint."
+#endif
+TRACE_EVENT(sched_load_balance,
+
+	TP_PROTO(int cpu, enum cpu_idle_type idle, int balance,
+		 unsigned long group_mask, int busiest_nr_running,
+		 unsigned long imbalance, unsigned int env_flags, int ld_moved,
+		 unsigned int balance_interval),
+
+	TP_ARGS(cpu, idle, balance, group_mask, busiest_nr_running,
+		imbalance, env_flags, ld_moved, balance_interval),
+
+	TP_STRUCT__entry(
+		__field(	int,			cpu)
+		__field(	enum cpu_idle_type,	idle)
+		__field(	int,			balance)
+		__field(	unsigned long,		group_mask)
+		__field(	int,			busiest_nr_running)
+		__field(	unsigned long,		imbalance)
+		__field(	unsigned int,		env_flags)
+		__field(	int,			ld_moved)
+		__field(	unsigned int,		balance_interval)
+	),
+
+	TP_fast_assign(
+		__entry->cpu			= cpu;
+		__entry->idle			= idle;
+		__entry->balance		= balance;
+		__entry->group_mask		= group_mask;
+		__entry->busiest_nr_running	= busiest_nr_running;
+		__entry->imbalance		= imbalance;
+		__entry->env_flags		= env_flags;
+		__entry->ld_moved		= ld_moved;
+		__entry->balance_interval	= balance_interval;
+	),
+
+	TP_printk("cpu=%d state=%s balance=%d group=%#lx busy_nr=%d imbalance=%ld flags=%#x ld_moved=%d bal_int=%d",
+		  __entry->cpu,
+		  __entry->idle == CPU_IDLE ? "idle" :
+		  (__entry->idle == CPU_NEWLY_IDLE ? "newly_idle" : "busy"),
+		  __entry->balance,
+		  __entry->group_mask, __entry->busiest_nr_running,
+		  __entry->imbalance, __entry->env_flags, __entry->ld_moved,
+		  __entry->balance_interval)
 );
 
 DECLARE_EVENT_CLASS(sched_process_template,
